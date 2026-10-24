@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#080b08">
+    <title>Última Noche — FPS de Supervivencia Zombi</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main id="game-container" aria-label="Juego 3D de supervivencia zombi"></main>
+
+    <!-- HUD principal -->
+    <section id="hud" class="hidden" aria-live="polite">
+        <div class="hud-top">
+            <div class="stat-card">
+                <span class="stat-label">OLEADA</span>
+                <strong id="wave-value" class="stat-value">1</strong>
+            </div>
+
+            <div class="wave-status">
+                <span class="wave-status-label">OBJETIVO</span>
+                <span id="wave-status-text">Sobrevive a la oleada</span>
+                <span class="remaining">RESTANTES <strong id="remaining-value">0</strong></span>
+            </div>
+
+            <div class="stat-card stat-card-right">
+                <span class="stat-label">ELIMINADOS</span>
+                <strong id="kills-value" class="stat-value kills">0</strong>
+            </div>
+        </div>
+
+        <div class="hud-bottom">
+            <div class="health-panel">
+                <div class="health-header">
+                    <span class="health-heart" aria-hidden="true"></span>
+                    <span class="health-label">VIDA</span>
+                    <strong id="health-value">100</strong>
+                </div>
+                <div class="health-bar">
+                    <div id="health-fill" class="health-fill"></div>
+                </div>
+            </div>
+
+            <div class="weapon-panel">
+                <div class="weapon-info">
+                    <span class="weapon-label">RIFLE DE SUPERVIVENCIA</span>
+                    <span id="reload-hint" class="reload-hint">R — RECARGAR</span>
+                </div>
+                <div class="ammo-readout">
+                    <strong id="ammo-value">30</strong>
+                    <span>/ ∞</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mira -->
+    <div id="crosshair" aria-hidden="true">
+        <span class="crosshair-line crosshair-top"></span>
+        <span class="crosshair-line crosshair-right"></span>
+        <span class="crosshair-line crosshair-bottom"></span>
+        <span class="crosshair-line crosshair-left"></span>
+        <span class="crosshair-dot"></span>
+    </div>
+
+    <div id="hitmarker" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+    </div>
+
+    <div id="damage-vignette" aria-hidden="true"></div>
+    <div id="low-health-vignette" aria-hidden="true"></div>
+
+    <div id="wave-banner" aria-live="assertive">
+        <span id="wave-banner-title">OLEADA 1</span>
+        <span id="wave-banner-subtitle">Los muertos se acercan…</span>
+    </div>
+
+    <!-- Pantalla de inicio -->
+    <section id="start-screen" class="screen">
+        <div class="screen-panel start-panel">
+            <p class="eyebrow">SUPERVIVENCIA · PRIMERA PERSONA</p>
+            <h1 class="game-title">ÚLTIMA<br><span>NOCHE</span></h1>
+            <p class="lead">Estás atrapado en un cementerio. No hay rescate.<br>Solo cuentas con tu rifle y las oleadas no se detendrán.</p>
+
+            <div class="controls-grid">
+                <div class="control-item">
+                    <span class="key-group"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span>
+                    <span>Moverse</span>
+                </div>
+                <div class="control-item">
+                    <span class="key-group"><kbd>RATÓN</kbd></span>
+                    <span>Apuntar</span>
+                </div>
+                <div class="control-item">
+                    <span class="key-group"><kbd>CLIC IZQ.</kbd></span>
+                    <span>Disparar</span>
+                </div>
+                <div class="control-item">
+                    <span class="key-group"><kbd>SHIFT</kbd></span>
+                    <span>Correr</span>
+                </div>
+                <div class="control-item">
+                    <span class="key-group"><kbd>R</kbd></span>
+                    <span>Recargar</span>
+                </div>
+                <div class="control-item">
+                    <span class="key-group"><kbd>ESC</kbd></span>
+                    <span>Pausa</span>
+                </div>
+            </div>
+
+            <button id="start-button" class="primary-button" type="button">
+                <span>ENTRAR AL CEMENTERIO</span>
+            </button>
+            <p class="hint">El ratón se capturará al empezar. Pulsa <kbd>ESC</kbd> para liberarlo.</p>
+        </div>
+    </section>
+
+    <!-- Pausa -->
+    <section id="pause-screen" class="screen hidden">
+        <div class="screen-panel compact-panel">
+            <p class="eyebrow">JUEGO EN PAUSA</p>
+            <h2 class="screen-title">SIN ALIENTO</h2>
+            <p class="lead">Los zombis esperan. No tardes.</p>
+            <button id="resume-button" class="primary-button" type="button">
+                <span>CONTINUAR</span>
+            </button>
+            <p class="hint">Pulsa <kbd>ESC</kbd> o el botón para volver a jugar.</p>
+        </div>
+    </section>
+
+    <!-- Fin de partida -->
+    <section id="game-over-screen" class="screen hidden">
+        <div class="screen-panel compact-panel game-over-panel">
+            <p class="eyebrow danger">LA NOCHE TE HA RECLAMADO</p>
+            <h2 class="screen-title">HAS CAÍDO</h2>
+
+            <div class="final-stats">
+                <div>
+                    <span>ZOMBIS ELIMINADOS</span>
+                    <strong id="final-kills">0</strong>
+                </div>
+                <div>
+                    <span>OLEADA ALCANZADA</span>
+                    <strong id="final-wave">1</strong>
+                </div>
+            </div>
+
+            <button id="restart-button" class="primary-button danger-button" type="button">
+                <span>VOLVER A INTENTARLO</span>
+            </button>
+            <p class="hint">También puedes pulsar <kbd>R</kbd>.</p>
+        </div>
+    </section>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+    <script type="module" src="main.js"></script>
+</body>
+</html>
